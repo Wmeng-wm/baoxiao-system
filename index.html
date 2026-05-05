@@ -2,14 +2,14 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
-<title>单锭机工艺计算器 v3.5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>单锭机工艺计算器 v3.6</title>
 <style>
-/* 基础重置：解决所有边框和溢出问题 */
+/* 核心布局：严防溢出，解决缩放 */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 :root {
-  --bg: #f1f5f9;
+  --bg: #f4f7f9;
   --card: #ffffff;
   --text: #1e293b;
   --sub: #64748b;
@@ -21,13 +21,13 @@
 body {
   margin: 0;
   background-color: var(--bg);
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   color: var(--text);
-  padding: 12px;
+  padding: 15px;
 }
 
 .wrap {
-  max-width: 500px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
@@ -36,7 +36,7 @@ body {
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   border: 1px solid #e2e8f0;
 }
 
@@ -44,27 +44,27 @@ body {
   font-size: 18px;
   font-weight: 800;
   text-align: center;
-  color: var(--text);
+  margin-bottom: 5px;
 }
 
-/* 切换按钮组 */
+/* 切换按钮 */
 .mode-toggle {
   display: flex;
   background: #f1f5f9;
   padding: 3px;
   border-radius: 8px;
-  margin: 12px 0;
+  margin: 10px 0 15px;
 }
 .mode-btn {
   flex: 1;
   text-align: center;
   padding: 8px 0;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
   border-radius: 6px;
-  transition: 0.2s;
   font-weight: 600;
   color: var(--sub);
+  transition: 0.2s;
 }
 .mode-btn.active {
   background: #fff;
@@ -72,7 +72,7 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 }
 
-/* 栅格布局 */
+/* 表单栅格 */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -80,9 +80,7 @@ body {
 }
 
 .field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: flex; flex-direction: column; gap: 4px;
 }
 
 label {
@@ -91,23 +89,19 @@ label {
   color: var(--sub);
 }
 
-/* 解决缩放问题的关键：font-size 设置为 16px */
+/* 关键修复：16px 防止 iOS 自动缩放 */
 input, select {
   width: 100%;
-  padding: 10px;
+  padding: 11px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
-  font-size: 16px; /* 移动端不放大的临界值 */
+  font-size: 16px; 
   outline: none;
-  transition: border-color 0.2s;
-  -webkit-appearance: none; /* 移除iOS默认样式 */
+  -webkit-appearance: none;
 }
 
-input:focus {
-  border-color: var(--pri);
-}
-
+input:focus { border-color: var(--pri); }
 input[readonly] {
   background-color: #f8fafc;
   color: var(--pri2);
@@ -120,32 +114,34 @@ input[readonly] {
   background: var(--pri);
   color: white;
   border: none;
-  padding: 14px;
+  padding: 15px;
   border-radius: 10px;
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
-  margin-top: 6px;
+  margin-top: 5px;
 }
 .calc-btn:active { background: var(--pri2); transform: scale(0.98); }
 
-/* 结果展示区 */
+/* 展示框加大：改为单列全宽排列 */
 .kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 .kpi {
   background: #f0fdf4;
-  padding: 12px;
+  padding: 14px 20px;
   border-radius: 10px;
-  text-align: center;
   border: 1px solid #dcfce7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-.kpi .t { font-size: 11px; color: #166534; font-weight: bold; }
-.kpi .v { font-size: 20px; font-weight: 800; color: #064e3b; margin-top: 2px; }
+.kpi .t { font-size: 13px; color: #166534; font-weight: bold; }
+.kpi .v { font-size: 20px; font-weight: 800; color: #064e3b; }
 
-/* 底部署名：已移除加黑加粗 */
+/* 底部：移除加粗加黑 */
 .footer {
   text-align: center;
   margin-top: 20px;
@@ -204,27 +200,28 @@ input[readonly] {
     </div>
   </div>
 
+  <!-- 加大后的展示框 -->
   <div class="kpi-grid">
     <div class="kpi">
-      <div class="t">输出宽度</div>
+      <div class="t">输出宽度 Result Width</div>
       <div class="v" id="resW">-</div>
     </div>
     <div class="kpi">
-      <div class="t">所需旦尼尔</div>
+      <div class="t">所需材料 Denier</div>
       <div class="v" id="resD">-</div>
     </div>
     <div class="kpi">
-      <div class="t">编织角度</div>
+      <div class="t">编织角度 Angle</div>
       <div class="v" id="resA">-</div>
     </div>
     <div class="kpi">
-      <div class="t">单丝直径</div>
+      <div class="t">单丝直径 Wire Dia.</div>
       <div class="v" id="resd">-</div>
     </div>
   </div>
 
   <div class="footer">
-    🇨🇳 ©️王萌 ｜2026 ｜内部授权使用
+    🇨🇳 ©️王萌 ｜ 2026 ｜内部授权使用
   </div>
 </div>
 
@@ -238,25 +235,19 @@ function setMode(m) {
   
   const ids = ['W', 'D', 'P'];
   ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (id === m) {
-      el.readOnly = true;
-    } else {
-      el.readOnly = false;
-    }
+    document.getElementById(id).readOnly = (id === m);
   });
 }
 
 function runCalc() {
   const N = parseFloat(document.getElementById('N').value) || 17;
   const C = parseFloat(document.getElementById('C').value) || 0.258;
-  const k = 0.01189; // 标准材料常数
+  const k = 0.01189; 
   
   let W = parseFloat(document.getElementById('W').value);
   let D = parseFloat(document.getElementById('D').value);
   let P = parseFloat(document.getElementById('P').value);
 
-  // 物理拟合公式：W = N * (k * sqrt(D)) * C * P^0.375
   const power = 0.375;
 
   if (currentMode === 'W') {
@@ -270,7 +261,6 @@ function runCalc() {
     document.getElementById('P').value = P.toFixed(2);
   }
 
-  // 更新仪表盘
   const angle = Math.atan((Math.PI * W) / (P || 1)) * 180 / Math.PI;
   document.getElementById('resW').innerText = W.toFixed(2) + " mm";
   document.getElementById('resD').innerText = Math.round(D) + " D";
@@ -278,7 +268,6 @@ function runCalc() {
   document.getElementById('resd').innerText = (k * Math.sqrt(D)).toFixed(4) + " mm";
 }
 
-// 默认执行一次
 setMode('W');
 runCalc();
 </script>
