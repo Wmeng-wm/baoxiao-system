@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>单锭机工艺计算器 v3.9 - 纤维专家版</title>
+<title>单锭机工艺计算器 v4.0 - 全纤维专家版</title>
 <style>
 /* 核心布局：防溢出，解决缩放 */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -23,7 +23,7 @@ body {
   background-color: var(--bg);
   font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
   color: var(--text);
-  padding: 15px;
+  padding: 12px;
 }
 
 .wrap { max-width: 520px; margin: 0 auto; }
@@ -71,7 +71,7 @@ body {
 
 label { font-size: 12px; font-weight: 700; color: var(--sub); }
 
-/* 16px 防止 iOS 点击输入框自动缩放界面 */
+/* 16px 防止 iOS 自动缩放 */
 input, select {
   width: 100%;
   padding: 11px;
@@ -100,7 +100,7 @@ input[readonly] { background-color: #f8fafc; color: var(--pri2); font-weight: 80
 }
 .calc-btn:active { background: var(--pri2); transform: scale(0.98); }
 
-/* 展示框全宽 */
+/* 展示框加大：单列全宽 */
 .kpi-grid { display: flex; flex-direction: column; gap: 10px; }
 .kpi {
   background: #f0fdf4;
@@ -128,11 +128,10 @@ input[readonly] { background-color: #f8fafc; color: var(--pri2); font-weight: 80
 
 <div class="wrap">
   <div class="card">
-    <div class="title">单锭机工艺计算器 (纤维版)</div>
+    <div class="title">单锭机工艺计算器 (专家版)</div>
   </div>
 
   <div class="card">
-    <!-- 模式切换 -->
     <div class="mode-toggle">
       <div class="mode-btn active" id="mW" onclick="setMode('W')">求宽度 W</div>
       <div class="mode-btn" id="mD" onclick="setMode('D')">求旦尼尔 D</div>
@@ -140,18 +139,19 @@ input[readonly] { background-color: #f8fafc; color: var(--pri2); font-weight: 80
     </div>
 
     <div class="grid">
-      <!-- 纤维材料选择 -->
+      <!-- 完整材料模块 -->
       <div class="field field-full">
-        <label>纤维材料选择 (Fiber Materials)</label>
+        <label>纤维材料库 (Fiber Library)</label>
         <select id="matType" onchange="updateK()">
-          <option value="0.01420">超高分子量聚乙烯 (UHMWPE/大马力)</option>
-          <option value="0.01140">对位芳纶 (Kevlar/芳纶1414)</option>
-          <option value="0.01189">涤纶工业丝 (Polyester/PET)</option>
-          <option value="0.01250">锦纶/尼龙丝 (Nylon/PA66)</option>
-          <option value="0.01050">碳纤维 (Carbon Fiber)</option>
-          <option value="0.01170">维特纶 (Vectran/LCP)</option>
-          <option value="0.00850">玄武岩/玻纤 (Basalt/Glass)</option>
-          <option value="custom">自定义系数 (Custom)</option>
+          <option value="0.01420">UHMWPE (超高分子量聚乙烯)</option>
+          <option value="0.01140">芳纶 (Kevlar/芳纶1414)</option>
+          <option value="0.01189">PET (聚酯/涤纶)</option>
+          <option value="0.01250">PA (尼龙/锦纶)</option>
+          <option value="0.01480">PP (聚丙烯)</option>
+          <option value="0.00880">PTFE (聚四氟乙烯/铁氟龙)</option>
+          <option value="0.01020">碳纤维 (Carbon Fiber)</option>
+          <option value="0.00850">玻璃纤维 (Glass Fiber)</option>
+          <option value="custom">自定义 (Custom)</option>
         </select>
       </div>
 
@@ -188,26 +188,39 @@ input[readonly] { background-color: #f8fafc; color: var(--pri2); font-weight: 80
         <input type="number" id="P" value="17" step="0.1">
       </div>
       
-      <button class="calc-btn" onclick="runCalc()">同步计算结果</button>
+      <button class="calc-btn" onclick="runCalc()">立即同步计算结果</button>
     </div>
   </div>
 
+  <!-- 加大后的全宽展示框 -->
   <div class="kpi-grid">
-    <div class="kpi"><div class="t">输出宽度 Result Width</div><div class="v" id="resW">-</div></div>
-    <div class="kpi"><div class="t">所需材料 Denier</div><div class="v" id="resD">-</div></div>
-    <div class="kpi"><div class="t">编织角度 Angle</div><div class="v" id="resA">-</div></div>
-    <div class="kpi"><div class="t">单丝直径 Wire Dia.</div><div class="v" id="resd">-</div></div>
+    <div class="kpi">
+      <div class="t">输出宽度 Result Width</div>
+      <div class="v" id="resW">-</div>
+    </div>
+    <div class="kpi">
+      <div class="t">所需旦尼尔 Denier</div>
+      <div class="v" id="resD">-</div>
+    </div>
+    <div class="kpi">
+      <div class="t">编织角度 Braid Angle</div>
+      <div class="v" id="resA">-</div>
+    </div>
+    <div class="kpi">
+      <div class="t">单丝直径 Wire Dia.</div>
+      <div class="v" id="resd">-</div>
+    </div>
   </div>
 
   <div class="footer">
-    🇨🇳 ©️王萌 ｜2026 ｜内部授权使用
+    🇨🇳 ©️王萌 ｜2026｜内部授权使用
   </div>
 </div>
 
 <script>
 let currentMode = 'W';
 
-// 材料库自动联动 k 值
+// 材料联动逻辑
 function updateK() {
   const sel = document.getElementById('matType');
   const kIn = document.getElementById('k');
@@ -234,7 +247,7 @@ function runCalc() {
   let D = parseFloat(document.getElementById('D').value);
   let P = parseFloat(document.getElementById('P').value);
 
-  // 经验拟合逻辑 (基于 P^0.375)
+  // 经验拟合逻辑
   const power = 0.375;
 
   if (currentMode === 'W') {
@@ -248,7 +261,7 @@ function runCalc() {
     document.getElementById('P').value = P.toFixed(2);
   }
 
-  // 结果渲染
+  // 计算显示
   const angle = Math.atan((Math.PI * W) / (P || 1)) * 180 / Math.PI;
   document.getElementById('resW').innerText = W.toFixed(2) + " mm";
   document.getElementById('resD').innerText = Math.round(D) + " D";
